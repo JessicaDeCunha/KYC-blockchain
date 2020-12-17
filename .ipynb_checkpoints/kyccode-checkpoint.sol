@@ -1,53 +1,93 @@
 pragma solidity ^0.5.0;
 
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/token/ERC721/ERC721Full.sol";
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/drafts/Counters.sol";
 
-contract KYC is ERC721Full {
+contract KYC {
 
-    constructor() ERC721Full("ClientInfo", "KYC") public { }
-
-    using Counters for Counters.Counter;
-    Counters.Counter token_ids;
- 
-     struct Client {
-        string name;
+    struct Client {
+        address userID;
         string email;
         string report_uri;
+        bool used;
+        //uint start_date;
+        uint end_date;
     }
-
-    // Stores token_id => Client
+    
+    
+    // Stores userID => Client
     // Only permanent data that you would need to use within the smart contract later should be stored on-chain
+    mapping (address => Client) public Clientdatabase;
     
-    mapping(uint => Client) public Clientdatabase;
-    
-    event NewClient(uint token_id, string report_uri);
-    event ChangeClientInfo(uint token_id, string report_uri);
-    
-    function registerKYC(address client, string memory name, string memory email, string memory report_uri) public returns(uint) {
-        token_ids.increment();
-        uint token_id = token_ids.current();
-
-        _mint(client, token_id);
-        emit NewClient(token_id, report_uri);
-
-        Clientdatabase[token_id] = Client(name, email, report_uri);
-
-        return token_id;
-    }
+    uint start_date = now;
     
     
-    function updateKYC(uint token_id, string memory report_uri) public returns(string memory) {
+    event NewClient(address userID, string report_uri);
+    event ChangeClientInfo(address userID, string report_uri);
+    
+    function registerKYC(address userID, string memory email, string memory report_uri) public returns(bool) {
         
+        require(!Clientdatabase[userID].used, "Account already Exists");
+        
+        emit NewClient(userID, report_uri);
+       
+       Clientdatabase[userID] = Client(userID, email, report_uri, true, now + 365 days);
+       
+       return Clientdatabase[userID].used;
+  }
+       
+    
+    function updateKYC(address userID, string memory newreport_uri) public returns(string memory) {
+        Clientdatabase[userID].report_uri = newreport_uri;
 
         // Permanently associates the report_uri with the token_id on-chain via Events for a lower gas-cost than storing directly in the contract's storage.
-        emit ChangeClientInfo(token_id, report_uri);
+        emit ChangeClientInfo(userID, newreport_uri);
         
-        return Clientdatabase[token_id].report_uri;
+        return Clientdatabase[userID].report_uri;
         
 
     }
     
-     
+     // check expiry date of a particular contract
+    function checkvalidity(address userID) public view returns(string memory) {
+        if (now > Clientdatabase[userID].end_date){
+        return "Contract has Expired!";
+    }
+    
+        else {
+            
+        return "Contract is Valid!";
+        }
+    } 
+   
+  // Create a list and loop through it to get expiring KYC reports
+    address [] public clientList;
+
+    event Logclientinfo(address client, uint clientend_date);
+
+    function appendclientinfo(address client, uint clientend_date) public {
+        clientList.push(client);
+        Clientdatabase[client].end_date = clientend_date;
+    }
+    
+    function getclientCount() public view returns(uint count) {
+        return clientList.length;
+    }
+    
+    function clientLoop() public {
+        
+        // WARN: This unbounded for loop is an anti-pattern
+        
+        for (uint i=0; i<clientList.length; i++) {
+            emit Logclientinfo(clientList[i], Clientdatabase[clientList[i]].end_date);
+            
+            
+        }
+    }
+
 }
+ 
+      
+
+
+
+
 

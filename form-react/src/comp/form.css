@@ -1,0 +1,76 @@
+body{
+  background-image: url('./City_Landscape_Background.jpg');
+  background-position: center;
+  background-size: cover;
+}
+h1{
+  text-align: center;
+  margin: 0px auto;
+  padding-bottom: 10px;
+  max-width: 600px;
+  box-sizing: border-box;
+}
+h2{
+  margin: 0px;
+  text-align: left;
+}
+#formContainer{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+#form{
+  max-width: 600px;
+  background-image: linear-gradient(to right, #64B2CC 30%, #657980);
+}
+fieldset{
+  border-width: 5px;
+  padding: 10px 20px 20px 20px;
+  border-color: #f2f2f2;
+  justify-content: center;
+}
+input{
+  margin: 10px 10px 10px 0px;
+  padding: 15px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+#fullName{
+  display: flex;
+  flex-wrap: wrap;
+}
+#fullName input{
+  flex-grow: 1;
+}
+#otherInputs{
+  display: flex;
+  flex-wrap: wrap;
+}
+#otherInputs input{
+  width: 100%;
+}
+#submit{
+  display: block;
+  margin: 0 auto;
+  padding: 12px 0px;
+  width: 200px;
+  font-weight: bold;
+  font-size: 18px;
+  border-radius: 5px;
+  background-color: #3E6F80;
+  color: white;
+  cursor: pointer;
+}
+
+#sub{
+ display: flex;
+  flex-wrap: wrap;
+  text-align:left;
+}
+#cen{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
